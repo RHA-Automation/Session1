@@ -1,0 +1,43 @@
+---
+- hosts: servers
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Install httpd
+      package:
+        name: httpd
+        state: present
+
+    - name: Enable httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Enable http
+      firewalld:
+        service: http
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+    - name: Create index.html
+      file:
+        path: /var/www/html/index.html
+        state: file
+        owner: root
+        group: root
+
+    - name: Add content to index.html
+      lineinfile:
+        dest: /var/www/html/index.html
+        state: present
+        line: 'It works!'
+
+    - name: Ensure http is responding
+      uri:
+        url: "http://192.168.50.85"
+        return_content: yes
+      register: http_output
+      failed_when: "'It works!' not in http_output.content"

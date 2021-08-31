@@ -1,0 +1,24 @@
+---
+- hosts: servers
+  gather_facts: false
+
+  tasks:
+    - name: Create Ansible service account
+      user:
+        name: ansible
+        comment: Ansible svc account
+        createhome: yes
+        system: yes
+        state: present
+
+    - name: Copy authorized keys for Ansible service account
+      authorized_key:
+        user: ansible
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    - name: Allow Ansible Services Account to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
