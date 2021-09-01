@@ -22,6 +22,13 @@
         permanent: yes
         immediate: yes
 
+    - name: Touch index.html
+      file:
+        path: /var/www/html/index.html
+        state: touch
+        owner: root
+        group: root
+
     - name: Create index.html
       file:
         path: /var/www/html/index.html
@@ -35,7 +42,7 @@
         state: present
         line: 'It works!'
 
-    - name: Ensure http is responding wit correct content
+    - name: Ensure http is responding with correct content
       uri:
         url: "http://localhost"
         return_content: yes
