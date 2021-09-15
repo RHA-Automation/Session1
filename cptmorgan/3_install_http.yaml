@@ -1,0 +1,37 @@
+---
+- hosts: servers
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Install httpd
+      package:
+        name: httpd
+        state: present
+
+    - name: Enable httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Enable http on FirewallD
+      firewalld:
+        service: http
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+    - name: Add content to index.html
+      lineinfile:
+        dest: /var/www/html/index.html
+        state: present
+        line: 'It works!'
+        create: yes
+
+    - name: Ensure http is responding with correct content
+      uri:
+        url: "http://localhost"
+        return_content: yes
+      register: http_output
+      failed_when: "'It works!' not in http_output.content"

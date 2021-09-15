@@ -1,0 +1,26 @@
+---
+- hosts: servers
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - name: Output running Kernel version
+      debug:
+        msg: "System {{ ansible_fqdn }} is booted with kernel: {{ ansible_kernel }}"
+
+    - name: Upgrade to the latest kernel
+      yum:
+        name: "kernel"
+        state: latest
+
+    - name: Restart the server to boot to new kernel
+      reboot:
+        reboot_timeout: 3000
+
+    - name: Run setup again
+      setup:
+
+    - name: Output new Kernel version
+      debug:
+        msg: "System {{ ansible_fqdn }} is now running {{ ansible_kernel }}"

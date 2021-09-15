@@ -1,0 +1,12 @@
+---
+- hosts: servers
+  gather_facts: false
+
+  tasks:
+    - name: Create Ansible service account
+      user:
+        name: testuser
+        comment: Test User Account
+        createhome: yes
+        password: "{{ 'password' | password_hash('sha512') }}"
+        state: present
